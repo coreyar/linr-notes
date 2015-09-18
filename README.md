@@ -8,4 +8,4 @@ This project is still under development. Musicbrainz is currently the only sourc
 The current version requires an artist search that returns one result e.g. 'Greenday'. Please feel free to bug searches that result in errors so I can handle them appropriately. 
 
 Thanks,
--CR# Linr-Notes
+-CR

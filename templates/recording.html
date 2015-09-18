@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<ul class=entries>
+	<div style="display:inline-block">
+		<img src={{ image }} width=200 height=200>
+	</div>
+	<div style="display:inline-block">
+
+	{% for track in tracks %}
+			<div class="hover">
+					{{ track['number'] }}. {{ track['recording']['title'] }}
+					<ul class="track-info">
+						<div>
+							<p>
+							{% for person in track['recording']['artist-relation-list'] %}
+							{{ person['type'] }} : {{ person['artist']['name'] }}</br>
+							{% endfor %}
+							</p>
+						</div>
+					</ul>
+			</div>
+		<!-- <div class="container">
+			<div class="header"><span>{{ track['number'] }}. {{ track['recording']['title'] }}</span>
+			</div>
+			<div class-"content">
+				<ul>
+					<li>track</li>
+				</ul>
+			</div>
+		</div> -->
+	{% endfor %}	
+	</div>
+</ul>
+{% endblock %}
