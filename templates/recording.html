@@ -3,7 +3,10 @@
 
 <ul class=entries>
 	<div style="display:inline-block">
-		<img src={{ image }} width=200 height=200>
+		{% if image %}
+			<img src={{ image }} width=200 height=200>
+		{% else %}
+			<img src={{ url_for('static', filename = 'album-art-missing.png') }} width=200 height=200>
 	</div>
 	<div style="display:inline-block">
 
