@@ -16,7 +16,7 @@
 		</form>
 	<ul class=entries>
 	{% if display_results %}
-		{% for song, id in display_results.iteritems() %}
+		{% for id, song in display_results.iteritems() %}
 			<li><h2><a href="{{ url_for('parse_song_title', song_id=id, song_title=song) }}">{{ song }}</a></h2>
 
 		{% else %}

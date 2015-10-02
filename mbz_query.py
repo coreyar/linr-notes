@@ -54,6 +54,7 @@ class MusicBrainzQueryInterface():
         data = ['artists', 'labels', 'recordings', 'release-groups', 'media', 'artist-credits', 'discids', 
         'isrcs', 'recording-level-rels', 'work-level-rels', 'annotation', 'aliases', 'area-rels', 'artist-rels', 'label-rels', 'place-rels',  
         'recording-rels', 'release-rels', 'release-group-rels', 'url-rels', 'work-rels']
+        image = False
         song_data =  mbz.get_release_by_id(song_id, includes=data) #'media', 'labels','recordings']
         labels_list = []
         for label in song_data['release']['label-info-list']:
