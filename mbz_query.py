@@ -35,7 +35,7 @@ class MusicBrainzQueryInterface():
                 print 'Try again'
         if song:
             results = getattr(mbz,"search_recordings")(song, artist=artist)
-        print results
+            results = song_parser(results)
         return results
 
     def artist_parser(self, result):
@@ -55,7 +55,6 @@ class MusicBrainzQueryInterface():
         'isrcs', 'recording-level-rels', 'work-level-rels', 'annotation', 'aliases', 'area-rels', 'artist-rels', 'label-rels', 'place-rels',  
         'recording-rels', 'release-rels', 'release-group-rels', 'url-rels', 'work-rels']
         song_data =  mbz.get_release_by_id(song_id, includes=data) #'media', 'labels','recordings']
-        print song_data['release']['medium-list'][0].keys()
         labels_list = []
         for label in song_data['release']['label-info-list']:
             labels_list.append(label['label']['name'])
@@ -64,17 +63,55 @@ class MusicBrainzQueryInterface():
         if song_data['release']['cover-art-archive']['artwork'] == 'true':
             r = requests.get('{0}/release/{1}'.format(caa, song_id)).json()
             image = r['images'][0]['image']
-
         return image, tracks, labels_list
 
 def parse_artist_rel_dict(recording_list):
     dict_of_recordings = {}
     for rec in recording_list['artist']['release-list']:
-        dict_of_recordings.update({rec['title']:rec['id']})
-    print dict_of_recordings
+        dict_of_recordings.update({rec['id']:rec['title']})
     return dict_of_recordings
 
 def create_track_time():
     return track_time
+
+def song_parser(results):
+    dict_of_recordings = {}
+    artist_name = ''
+    title = ''
+    rec_type = ''
+    rec_type_title = ''
+    status = ''
+    for recording in results['recording-list']:
+        try:
+            artist_name = recording['artist-credit'][0]['artist']['name'] 
+        except KeyError:
+            pass
+        try:
+            title = recording['title']
+        except KeyError:
+            pass
+        try:
+            rec_type = recording['release-list'][0]['release-group']['primary-type'] 
+        except KeyError:
+            pass
+        try:
+            for release in recording['release-list']:
+                rec_type_title = release['title'] 
+        except KeyError:
+            pass
+        try:
+            for rel_stat in recording['release-list']:
+                status = rel_stat['status'] 
+        except KeyError:
+            pass
+        try:
+            for rel_alb_id in recording['release-list']:
+                alb_id = rel_alb_id['id']
+        except KeyError:
+            pass
+        display_title = artist_name + ' - ' + title + ' (' + rec_type + ': ' + rec_type_title + ', ' + status + ')'
+        rec_id = recording['id']
+        dict_of_recordings.update({alb_id:display_title})
+    return dict_of_recordings
 
 
