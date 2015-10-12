@@ -23,5 +23,12 @@
 			<li><em>Unbelievable. No entries here so far</em>
 		{% endfor %}
 	{% endif %}
+	{% if artist_results %}
+		{% for id, artist in artist_results['artist'].iteritems() %}
+			<li><h2><a href="{{ url_for('return_artists', artist_id=id, artist_title=artist) }}">{{ artist }}</a></h2></li>
+		{% else %}
+			<li><em>Unbelievable. No entries here so far</em>
+		{% endfor %}
+	{% endif %}
 	</ul>
 {% endblock %}

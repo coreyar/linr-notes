@@ -5,7 +5,7 @@ Linr Notes is a web app that retrieves liner notes for searched albums and songs
 ### Current implentation
 This project is still under development. Musicbrainz is currently the only source used to pull information about searches but more sources will likely be implemented in the future. 
 
-The current version requires an artist search that returns one result e.g. 'Greenday'. Please feel free to bug searches that result in errors so I can handle them appropriately. 
+Please feel free to bug searches that result in errors so I can handle them appropriately. 
 
 Thanks,
 -CR

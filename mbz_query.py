@@ -31,24 +31,28 @@ class MusicBrainzQueryInterface():
                 mbz_id = result['artist-list'][0]['id']
                 artist_rec_dict = getattr(mbz, "get_artist_by_id")(mbz_id, includes=['releases'])
                 results = parse_artist_rel_dict(artist_rec_dict)
+                return results
             else:
-                print 'Try again'
+                artist_results = {'artist':parse_artist_list(result)}
+                return artist_results
         if song:
             results = getattr(mbz,"search_recordings")(song, artist=artist)
             results = song_parser(results)
+            return results
+
+    def retrieve_albums_by_artist_id(self, artist_id):
+        artist_albums = getattr(mbz, "get_artist_by_id")(artist_id, includes=['releases'])
+        results = parse_artist_rel_dict(artist_albums)
         return results
 
     def artist_parser(self, result):
-        """
-        Store Artist Name, ID
-        """
         return dict(artist_name=result['artist-list'][0]['name'], 
                     music_brainz_id=result['artist-list'][0]['id'])
 
-    def update_artist_database(self, artist_dict):
-        with self.db:
-            self.db.execute("INSERT INTO artists (artist_name, artist_music_brainz_id) VALUES ('%s', '%s')" % (artist_dict['artist_name'], artist_dict['music_brainz_id']))
-            self.db.commit()
+    # def update_artist_database(self, artist_dict):
+    #     with self.db:
+    #         self.db.execute("INSERT INTO artists (artist_name, artist_music_brainz_id) VALUES ('%s', '%s')" % (artist_dict['artist_name'], artist_dict['music_brainz_id']))
+    #         self.db.commit()
 
     def release_info(self, song_id):
         data = ['artists', 'labels', 'recordings', 'release-groups', 'media', 'artist-credits', 'discids', 
@@ -115,4 +119,9 @@ def song_parser(results):
         dict_of_recordings.update({alb_id:display_title})
     return dict_of_recordings
 
+def parse_artist_list(result):
+    dict_of_artists = {}
+    for artist in result['artist-list']:
+        dict_of_artists.update({artist['id']:artist['name']})
+    return dict_of_artists
 

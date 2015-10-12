@@ -48,24 +48,33 @@ def teardown_request(exception):
 def perform_query():
 	artist = None
 	song = None
-	search_results	 = None
+	search_results = None
 	rec_titles = None 
 	if request.method == 'POST':
 		artist = request.form['artist']
 		song = request.form['song']
-		# print request.form.song
 		search_results = mbz_q.mbz_query(artist=artist, song=song)
+		try: 
+			if search_results['artist']:
+				print search_results
+				print 'yes'
+				return render_template('show_entries.html', artist_results=search_results)
+		except KeyError:
 	# if artist and not song:
 	# 	return render_template('show_entries.html', display_results=search_results)
 	# else: 
 	# 	pass
-	print search_results
+			return render_template('show_entries.html', display_results=search_results)
+	return render_template('show_entries.html', display_results=search_results)
+
+@app.route('/artists/<artist_title>/<artist_id>', methods=['GET', 'POST'])
+def return_artists(artist_title,artist_id):
+	search_results = mbz_q.retrieve_albums_by_artist_id(artist_id)
 	return render_template('show_entries.html', display_results=search_results)
 
 @app.route('/recording/<song_title>/<song_id>', methods=['GET', 'POST'])
 def parse_song_title(song_title, song_id):
 	image, tracks, labels_list = mbz_q.release_info(song_id)
-	print tracks
 	return render_template('recording.html', image=image, tracks=tracks)
 
 @app.route('/login', methods=['GET','POST'])
