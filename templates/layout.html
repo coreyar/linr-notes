@@ -1,4 +1,6 @@
-<!doctype html>
+{% import "wtf.html" as wtf %}
+
+{% block body_content %}
 <title>Linr Notes</title>
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 	<script type=text/javascript src="{{ url_for('static', filename='jquery-1.11.3.js') }}"></script>
@@ -13,9 +15,10 @@
 	// </script> -->
 	<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}">
 	</script>
-<div class=page>
-	<h1>Linr Notes</h1>
-	<div class=metanav>
+<div class="page">
+	<h1 align="center">Linr Notes <em>Beta</em> </h1>
+	<p> Linr Notes is an application that retrieves song credit information for the <a href="https://musicbrainz.org/">Music Brainz</a> database.<p>
+	<div class="metanav">
 	<!-- {% if not session.logged_in %}
 		<a href="{{ url_for('login') }}">log in</a>
 	{% else %}
@@ -28,3 +31,8 @@
 	
 	{% block body %}{% endblock %}
 </div>
+
+<footer>
+      <p align="center">&copy; <a href="http://www.hamachidigital.com">Hamachi Digital</a> 2015 </p>
+</footer>
+{% endblock %}

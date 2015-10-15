@@ -1,11 +1,15 @@
 {% extends "layout.html" %}
 {% block body %}
+	{% if not display_results or artist_results %}
 		<form action="{{ url_for('perform_query') }}" method="post" class="perform-query">
 			<dl>
-				<dt>Artist:
-				<dd><input type=text size=30 name="artist">
-				<dt>Song:
-				<dd><input type=text size=30 name="song">
+
+				<dt style="display:inline-block">Artist:
+				<dd style="display:inline-block"><input type=text size=30 name="artist">
+			</dl>
+			<dl>
+				<dt style="display:inline-block">Song:
+				<dd style="display:inline-block"><input type=text size=30 name="song">
 				<!-- <select name="query_type">
 			        <option value="artists">Artist</option>
 			        <option value="recordings">Song</option>
@@ -15,6 +19,7 @@
 			</dl>
 		</form>
 	<ul class=entries>
+	{% endif %}	
 	{% if display_results %}
 		{% for id, song in display_results.iteritems() %}
 			<li><h2><a href="{{ url_for('parse_song_title', song_id=id, song_title=song) }}">{{ song }}</a></h2>
