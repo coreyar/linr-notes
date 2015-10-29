@@ -1,6 +1,7 @@
 {% import "wtf.html" as wtf %}
 
 {% block body_content %}
+
 <title>Linr Notes</title>
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 	<script type=text/javascript src="{{ url_for('static', filename='jquery-1.11.3.js') }}"></script>
@@ -14,10 +15,12 @@
  //  		$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 	// </script> -->
 	<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}">
+
 	</script>
+	{{ analytics }}
 <div class="page">
 	<h1 align="center">Linr Notes <em>Beta</em> </h1>
-	<p> Linr Notes is an application that retrieves song credit information for the <a href="https://musicbrainz.org/">Music Brainz</a> database.<p>
+	<p> Linr Notes is an application that retrieves song credit information from the <a href="https://musicbrainz.org/">Music Brainz</a> database.<p>
 	<div class="metanav">
 	<!-- {% if not session.logged_in %}
 		<a href="{{ url_for('login') }}">log in</a>

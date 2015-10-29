@@ -3,17 +3,6 @@ import os
 import json
 import requests
 
-# import sqlite3
-#
-# def create_table():
-#     with sqlite3.connect("output.db") as db:
-#         db.execute("""CREATE TABLE IF NOT EXISTS artists (
-#             id INTEGER PRIMARY KEY,
-#             artist_name STRING,
-#             music_brainz_id STRING
-#             )""")
-#         db.commit()
-
 caa = 'http://coverartarchive.org'
 
 class MusicBrainzQueryInterface():
