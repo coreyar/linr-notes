@@ -21,16 +21,7 @@
 <div class="page">
 	<h1 align="center">Linr Notes <em>Beta</em> </h1>
 	<p> Linr Notes is an application that retrieves song credit information from the <a href="https://musicbrainz.org/">Music Brainz</a> database.<p>
-	<div class="metanav">
-	<!-- {% if not session.logged_in %}
-		<a href="{{ url_for('login') }}">log in</a>
-	{% else %}
-		<a href="{{ url_for('logout') }}">log out</a>
-	{% endif %} -->
-	</div>
-	{% for message in get_flashed_messages() %}
-		<div class=flash>{{ message }}</div>
-	{% endfor %}
+
 	
 	{% block body %}{% endblock %}
 </div>

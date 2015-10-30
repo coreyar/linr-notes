@@ -12,63 +12,53 @@ class MusicBrainzQueryInterface():
         self.set_useragent = mbz.set_useragent(app_name, app_version, contact)
         # self.db = sqlite3.connect("output.db")
 
-    def mbz_query(self, artist, song=None):
-        results = None
-        if artist and not song:
-            result = getattr(mbz, "search_artists")(artist)
-            if result['artist-count'] == 1:
-                mbz_id = result['artist-list'][0]['id']
-                artist_rec_dict = getattr(mbz, "get_artist_by_id")(mbz_id, includes=['releases'])
-                results = parse_artist_rel_dict(artist_rec_dict)
-                return results
-            else:
-                artist_results = {'artist':parse_artist_list(result)}
-                return artist_results
+    def mbz_query(self, artist, song):
         if song:
-            results = getattr(mbz,"search_recordings")(song, artist=artist)
-            results = song_parser(results)
-            return results
+            return recording_parser(mbz.search_recordings(song, artist))
+        else:
+            results = mbz.search_artists(artist) 
+            if results['artist-count'] == 1:
+                mbz_id = results['artist-list'][0]['id']
+                return retrieve_albums_by_artist_id(mbz_id)
+                # artist_releases = mbz.get_artist_by_id(mbz_id, includes=['releases'])
+                # return parse_artist_releases(artist_releases)
+            else:
+                return parse_artist_list(results)
 
-    def retrieve_albums_by_artist_id(self, artist_id):
-        artist_albums = getattr(mbz, "get_artist_by_id")(artist_id, includes=['releases'])
-        results = parse_artist_rel_dict(artist_albums)
-        return results
+    def retrieve_albums_by_artist_id(self, mbz_id):
+        return parse_artist_releases(mbz.get_artist_by_id(mbz_id, includes=['releases']))
 
     def artist_parser(self, result):
         return dict(artist_name=result['artist-list'][0]['name'], 
                     music_brainz_id=result['artist-list'][0]['id'])
 
-    # def update_artist_database(self, artist_dict):
-    #     with self.db:
-    #         self.db.execute("INSERT INTO artists (artist_name, artist_music_brainz_id) VALUES ('%s', '%s')" % (artist_dict['artist_name'], artist_dict['music_brainz_id']))
-    #         self.db.commit()
-
-    def release_info(self, song_id):
+    def release_info(self, album_id):
         data = ['artists', 'labels', 'recordings', 'release-groups', 'media', 'artist-credits', 'discids', 
         'isrcs', 'recording-level-rels', 'work-level-rels', 'annotation', 'aliases', 'area-rels', 'artist-rels', 'label-rels', 'place-rels',  
         'recording-rels', 'release-rels', 'release-group-rels', 'url-rels', 'work-rels']
         image = False
-        song_data =  mbz.get_release_by_id(song_id, includes=data) #'media', 'labels','recordings']
+        album_data =  mbz.get_release_by_id(album_id, includes=data) #'media', 'labels','recordings']
         labels_list = []
-        for label in song_data['release']['label-info-list']:
+        for label in album_data['release']['label-info-list']:
             labels_list.append(label['label']['name'])
-        tracks = song_data['release']['medium-list'][0]['track-list']
+        tracks = album_data['release']['medium-list'][0]['track-list']
         # release_date = song_data['release']['date']
-        if song_data['release']['cover-art-archive']['artwork'] == 'true':
-            r = requests.get('{0}/release/{1}'.format(caa, song_id)).json()
+        if album_data['release']['cover-art-archive']['artwork'] == 'true':
+            r = requests.get('{0}/release/{1}'.format(caa, album_id)).json()
             image = r['images'][0]['image']
-        return image, tracks, labels_list
+        return image, tracks, labels_list, 
 
-def parse_artist_rel_dict(recording_list):
-    dict_of_recordings = {}
-    for rec in recording_list['artist']['release-list']:
-        dict_of_recordings.update({rec['id']:rec['title']})
-    return dict_of_recordings
+##Series of functions to parse Musicbrainz results
+def parse_artist_releases(releases):
+    rel_id_title_dict = {}
+    for rel in releases['artist']['release-list']:
+        rel_id_title_dict.update({rel['id']:rel['title']})
+    return rel_id_title_dict
 
 def create_track_time():
     return track_time
 
-def song_parser(results):
+def recording_parser(results):
     dict_of_recordings = {}
     artist_name = ''
     title = ''
@@ -107,6 +97,9 @@ def song_parser(results):
         rec_id = recording['id']
         dict_of_recordings.update({alb_id:display_title})
     return dict_of_recordings
+
+def retrieve_albums_by_artist_id(mbz_id):
+    return parse_artist_releases(mbz.get_artist_by_id(mbz_id, includes=['releases']))
 
 def parse_artist_list(result):
     dict_of_artists = {}

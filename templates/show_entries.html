@@ -1,39 +1,47 @@
 {% extends "layout.html" %}
 {% block body %}
-	{% if not display_results or artist_results %}
-		<form action="{{ url_for('perform_query') }}" method="post" class="perform-query">
-			<dl>
-
-				<dt style="display:inline-block">Artist:
-				<dd style="display:inline-block"><input type=text size=30 name="artist">
-			</dl>
-			<dl>
-				<dt style="display:inline-block">Song:
-				<dd style="display:inline-block"><input type=text size=30 name="song">
-				<!-- <select name="query_type">
-			        <option value="artists">Artist</option>
-			        <option value="recordings">Song</option>
-			        <option value="album">Album</option>        
-			    </select> -->
-				<dd><input type="submit" value="Search">
-			</dl>
-		</form>
-	<ul class=entries>
-	{% endif %}	
 	{% if display_results %}
-		{% for id, song in display_results.iteritems() %}
-			<li><h2><a href="{{ url_for('parse_song_title', song_id=id, song_title=song) }}">{{ song }}</a></h2>
-
-		{% else %}
-			<li><em>Unbelievable. No entries here so far</em>
+			<h1>Albums</h1>
+			<ul>
+		{% for id, album in display_results.iteritems() %}
+			<li><h2><a href="{{ url_for('parse_album_title', album_id=id, album_title=album) }}">{{ album }}</a></h2>
 		{% endfor %}
-	{% endif %}
-	{% if artist_results %}
-		{% for id, artist in artist_results['artist'].iteritems() %}
+			</ul>
+	{% elif artist_results %}
+			<h1>Artists</h1>
+			<ul>
+		{% for id, artist in artist_results.iteritems() %}
 			<li><h2><a href="{{ url_for('return_artists', artist_id=id, artist_title=artist) }}">{{ artist }}</a></h2></li>
-		{% else %}
-			<li><em>Unbelievable. No entries here so far</em>
 		{% endfor %}
+			</ul>
+	{% elif image and tracks %}
+			<h2>{{ album_title }}</h2>
+			<div style="display:inline-block">
+		{% if image %}
+			<img src={{ image }} width=200 height=200>
+		{% else %}
+			<img src={{ url_for('static', filename = 'album-art-missing.png') }} width=200 height=200>
+		{% endif %}
+			</div>
+			<div style="display:inline-block">
+
+		{% for track in tracks %}
+			<div class="hover">
+					{{ track['number'] }}. {{ track['recording']['title'] }}
+					<ul class="track-info">
+						<div>
+							<p>
+							{% for person in track['recording']['artist-relation-list'] %}
+							{{ person['type'] }} : {{ person['artist']['name'] }}</br>
+							{% endfor %}
+							</p>
+						</div>
+					</ul>
+			</div>
+		{% endfor %}	
+	</div>
+	{% else %}
+			<li><em>Unbelievable. No entries here so far</em>
 	{% endif %}
 	</ul>
 {% endblock %}
