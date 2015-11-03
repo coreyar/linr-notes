@@ -23,7 +23,7 @@ class MusicBrainzQueryInterface():
                 # artist_releases = mbz.get_artist_by_id(mbz_id, includes=['releases'])
                 # return parse_artist_releases(artist_releases)
             else:
-                return parse_artist_list(results)
+                return {'artist':parse_artist_list(results)}
 
     def retrieve_albums_by_artist_id(self, mbz_id):
         return parse_artist_releases(mbz.get_artist_by_id(mbz_id, includes=['releases']))
@@ -37,7 +37,7 @@ class MusicBrainzQueryInterface():
         'isrcs', 'recording-level-rels', 'work-level-rels', 'annotation', 'aliases', 'area-rels', 'artist-rels', 'label-rels', 'place-rels',  
         'recording-rels', 'release-rels', 'release-group-rels', 'url-rels', 'work-rels']
         image = False
-        album_data =  mbz.get_release_by_id(album_id, includes=data) #'media', 'labels','recordings']
+        album_data =  mbz.get_release_by_id(album_id, includes=data) 
         labels_list = []
         for label in album_data['release']['label-info-list']:
             labels_list.append(label['label']['name'])

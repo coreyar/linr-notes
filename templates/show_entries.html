@@ -10,7 +10,7 @@
 	{% elif artist_results %}
 			<h1>Artists</h1>
 			<ul>
-		{% for id, artist in artist_results.iteritems() %}
+		{% for id, artist in artist_results['artist'].iteritems() %}
 			<li><h2><a href="{{ url_for('return_artists', artist_id=id, artist_title=artist) }}">{{ artist }}</a></h2></li>
 		{% endfor %}
 			</ul>
@@ -31,9 +31,13 @@
 					<ul class="track-info">
 						<div>
 							<p>
-							{% for person in track['recording']['artist-relation-list'] %}
-							{{ person['type'] }} : {{ person['artist']['name'] }}</br>
-							{% endfor %}
+							{% if track['recording']['artist-relation-list'] is defined %}
+								{% for person in track['recording']['artist-relation-list'] %}
+									{{ person['type'] }} : {{ person['artist']['name'] }}</br>
+								{% endfor %}
+							{% else %}
+								Whoops! Looks like some info is missing. If you are obliged you can fill it in at <a href="http://musicbrainz.org">MusicBrainz.org</a> Thanks!
+							{% endif %}
 							</p>
 						</div>
 					</ul>

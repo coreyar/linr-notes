@@ -1,13 +1,11 @@
-import os
+import os, urllib
 from flask import Flask, request, session, g, redirect, url_for, \
 	abort, render_template, flash
 from contextlib import closing
 from flask.ext.bootstrap import Bootstrap
+from flask_analytics import Analytics
 from flaskext.mysql import MySQL
 from mbz_query import MusicBrainzQueryInterface
-from flask_analytics import Analytics
-import urllib
-
 
 app = Flask(__name__)
 mysql = MySQL()
@@ -31,14 +29,13 @@ mysql.init_app(app)
 with app.app_context():
 	conn = mysql.connect()
 	cur = conn.cursor()
-	cur.execute("""CREATE DATABASE IF NOT EXISTS linr_notes;""") 
-	cur.execute("""CREATE TABLE IF NOT EXISTS linr_notes.searches(
-	            id INTEGER PRIMARY KEY AUTO_INCREMENT,
-	            artist_name TEXT,
-	            musicbrainz_artist_id TEXT,
-	            recording_title TEXT,
-	            musicbrainz_recording_id TEXT,
-	            location TEXT);""")
+	with open('linr_notes.sql', 'r') as mysql_file:
+		sqlCommands = mysql_file.read().split(';')
+		for command in sqlCommands:
+			try:
+				cur.execute(command)
+			except:
+				pass
 
 @app.before_request
 def before_request():
@@ -52,10 +49,16 @@ def perform_query():
 	if request.method == 'POST':
 		artist = request.form['artist']
 		song = request.form['song']
-		ip = request.remote_addr
-		response = urllib.urlopen('http://api.hostip.info/get_html.php?ip=%s&position=true' % (ip,)).read()
-		print response
-		cur.execute("INSERT INTO searches (artist_name) values ('%s');" % (artist,))
+		location = urllib.urlopen('http://api.hostip.info/get_html.php?ip=%s&position=true' % (request.remote_addr,)).read()
+		artist_bool = 1 if artist else 0
+		song_bool = 1 if song else 0
+		cur.execute("""INSERT INTO searches (artist_search, recording_title_search, ip_address) values ('%d', '%d','%s');
+		   """ % (artist_bool, song_bool, location))
+		cur.execute('SELECT LAST_INSERT_ID() INTO @last_search_id;')
+		if artist:
+			cur.execute("INSERT INTO artist_searches (search_id, search_term) values (@last_search_id,'%s');" % (artist,))
+		if song:
+			cur.execute("INSERT INTO recording_searches (search_id, search_term) values (@last_search_id,'%s');" % (song,))
 		conn.commit()
 		try:
 			search_results = mbz_q.mbz_query(artist=artist, song=song)
