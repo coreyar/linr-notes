@@ -1,7 +1,6 @@
 import musicbrainzngs as mbz
-import os
-import json
-import requests
+import os, json, requests
+from operator import itemgetter
 
 caa = 'http://coverartarchive.org'
 
@@ -20,8 +19,6 @@ class MusicBrainzQueryInterface():
             if results['artist-count'] == 1:
                 mbz_id = results['artist-list'][0]['id']
                 return retrieve_albums_by_artist_id(mbz_id)
-                # artist_releases = mbz.get_artist_by_id(mbz_id, includes=['releases'])
-                # return parse_artist_releases(artist_releases)
             else:
                 return {'artist':parse_artist_list(results)}
 
@@ -50,10 +47,10 @@ class MusicBrainzQueryInterface():
 
 ##Series of functions to parse Musicbrainz results
 def parse_artist_releases(releases):
-    rel_id_title_dict = {}
+    rel_id_title_list = []
     for rel in releases['artist']['release-list']:
-        rel_id_title_dict.update({rel['id']:rel['title']})
-    return rel_id_title_dict
+        rel_id_title_list.append({'id':rel['id'], 'title':rel['title']})
+    return sorted(rel_id_title_list, key=itemgetter('title')) 
 
 def create_track_time():
     return track_time
@@ -106,4 +103,7 @@ def parse_artist_list(result):
     for artist in result['artist-list']:
         dict_of_artists.update({artist['id']:artist['name']})
     return dict_of_artists
+
+def order_list(list_to_order):
+    return sorted(list_to_order, key=itemgetter('ext:score'))
 

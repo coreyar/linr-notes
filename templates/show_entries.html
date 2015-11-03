@@ -3,8 +3,8 @@
 	{% if display_results %}
 			<h1>Albums</h1>
 			<ul>
-		{% for id, album in display_results.iteritems() %}
-			<li><h2><a href="{{ url_for('parse_album_title', album_id=id, album_title=album) }}">{{ album }}</a></h2>
+		{% for result in display_results %}
+			<li><h2><a href="{{ url_for('parse_album_title', album_id=result['id'], album_title=result['title']) }}">{{ result['title'] }}</a></h2>
 		{% endfor %}
 			</ul>
 	{% elif artist_results %}
