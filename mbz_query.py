@@ -99,10 +99,11 @@ def retrieve_albums_by_artist_id(mbz_id):
     return parse_artist_releases(mbz.get_artist_by_id(mbz_id, includes=['releases']))
 
 def parse_artist_list(result):
-    dict_of_artists = {}
+    list_of_artists = []
+    print result['artist-list']
     for artist in result['artist-list']:
-        dict_of_artists.update({artist['id']:artist['name']})
-    return dict_of_artists
+        list_of_artists.append({'id':artist['id'],'name':artist['name']})
+    return list_of_artists
 
 def order_list(list_to_order):
     return sorted(list_to_order, key=itemgetter('ext:score'))

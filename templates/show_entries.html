@@ -10,8 +10,8 @@
 	{% elif artist_results %}
 			<h1>Artists</h1>
 			<ul>
-		{% for id, artist in artist_results['artist'].iteritems() %}
-			<li><h2><a href="{{ url_for('return_artists', artist_id=id, artist_title=artist) }}">{{ artist }}</a></h2></li>
+		{% for result in artist_results['artist'] %}
+			<li><h2><a href="{{ url_for('return_artists', artist_id=result['id'], artist_title=result['name']) }}">{{ result['name'] }}</a></h2></li>
 		{% endfor %}
 			</ul>
 	{% elif image and tracks %}
