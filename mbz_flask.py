@@ -19,8 +19,8 @@ mbz_q = MusicBrainzQueryInterface('Linr Notes', '0.0.1', 'coreyarice@gmail.com')
 # Analytics
 app.config['ANALYTICS']['GOOGLE_ANALYTICS']['account'] = os.environ['LINR_NOTES_GA']
 #Configure MySQL Database
-app.config['MYSQL_DATABASE_USER'] = os.environ['LINR_NOTES_DB_PW']
-app.config['MYSQL_DATABASE_PASSWORD'] = os.environ['LINR_NOTES_MYSQL_DATABASE_USER']
+app.config['MYSQL_DATABASE_USER'] = os.environ['LINR_NOTES_DB_USER']
+app.config['MYSQL_DATABASE_PASSWORD'] = os.environ['LINR_NOTES_DB_PW']
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_DB'] = 'linr_notes'
 mysql.init_app(app)

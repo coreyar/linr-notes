@@ -5,19 +5,11 @@
 <title>Linr Notes</title>
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 	<script type=text/javascript src="{{ url_for('static', filename='jquery-1.11.3.js') }}"></script>
-	<script type=text/javascript> $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-	</script>
+	<script type=text/javascript> $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
+	<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
 
-	<!-- <script>
-	// 	window.jQuery || document.write('<script src="{{ url_for('static', filename='jquery.js') }}">\x3C/script>')
-	// </script>
-	// <script type=text/javascript>
- //  		$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-	// </script> -->
-	<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}">
-
-	</script>
 	{{ analytics }}
+	
 <div class="page">
 	<h1 align="center">Linr Notes <em>Beta</em> </h1>
 	<p> Linr Notes is an application that retrieves song credit information from the <a href="https://musicbrainz.org/">Music Brainz</a> database.<p>

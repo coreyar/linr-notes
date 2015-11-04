@@ -56,7 +56,7 @@ def create_track_time():
     return track_time
 
 def recording_parser(results):
-    dict_of_recordings = {}
+    list_of_recordings = []
     artist_name = ''
     title = ''
     rec_type = ''
@@ -92,8 +92,8 @@ def recording_parser(results):
             pass
         display_title = artist_name + ' - ' + title + ' (' + rec_type + ': ' + rec_type_title + ', ' + status + ')'
         rec_id = recording['id']
-        dict_of_recordings.update({alb_id:display_title})
-    return dict_of_recordings
+        list_of_recordings.append({'id':alb_id,'name':display_title})
+    return list_of_recordings
 
 def retrieve_albums_by_artist_id(mbz_id):
     return parse_artist_releases(mbz.get_artist_by_id(mbz_id, includes=['releases']))
@@ -105,6 +105,4 @@ def parse_artist_list(result):
         list_of_artists.append({'id':artist['id'],'name':artist['name']})
     return list_of_artists
 
-def order_list(list_to_order):
-    return sorted(list_to_order, key=itemgetter('ext:score'))
 
