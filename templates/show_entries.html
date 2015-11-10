@@ -1,49 +1,63 @@
-{% extends "layout.html" %}
-{% block body %}
-	{% if display_results %}
-			<h1>Albums</h1>
-			<ul>
-		{% for result in display_results %}
-			<li><h2><a href="{{ url_for('parse_album_title', album_id=result['id'], album_title=result['title']) }}">{{ result['title'] }}</a></h2>
-		{% endfor %}
-			</ul>
-	{% elif artist_results %}
-			<h1>Artists</h1>
-			<ul>
-		{% for result in artist_results['artist'] %}
-			<li><h2><a href="{{ url_for('return_artists', artist_id=result['id'], artist_title=result['name']) }}">{{ result['name'] }}</a></h2></li>
-		{% endfor %}
-			</ul>
-	{% elif image and tracks %}
-			<h2>{{ album_title }}</h2>
-			<div style="display:inline-block">
-		{% if image %}
-			<img src={{ image }} width=200 height=200>
-		{% else %}
-			<img src={{ url_for('static', filename = 'album-art-missing.png') }} width=200 height=200>
-		{% endif %}
-			</div>
-			<div style="display:inline-block">
+{% extends "base.html" %}
+{% block content %}
 
-		{% for track in tracks %}
-			<div class="hover">
-					{{ track['number'] }}. {{ track['recording']['title'] }}
-					<ul class="track-info">
-						<div>
-							<p>
-							{% if track['recording']['artist-relation-list'] is defined %}
-								{% for person in track['recording']['artist-relation-list'] %}
-									{{ person['type'] }} : {{ person['artist']['name'] }}</br>
-								{% endfor %}
+	{% if release_display_list %}
+		{% for rel_display in release_display_list %}
+		
+			<div class="row">
+			<div class="panel-group">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							{% if rel_display['image'] %}
+								<img src={{ rel_display['image'] }} width=100 height=100>
 							{% else %}
-								Whoops! Looks like some info is missing. If you are obliged you can fill it in at <a href="http://musicbrainz.org">MusicBrainz.org</a> Thanks!
+								<img src={{ url_for('static', filename = 'album-art-missing.png') }} width=100 height=100>
 							{% endif %}
-							</p>
+							<a data-toggle="collapse" data-target="#rel{{ loop.index }}" href="#rel{{ loop.index }}">{{ album_title }}</a>
+						</h4>
+					</div>
+					<div id="rel{{ loop.index }}" class="panel-collapse collapse">
+					<div class="panel-body">	
+					<div class="row">
+					<!-- 	<div style="display:inline-block">
+							{% if rel_display['image'] %}
+								<img src={{ rel_display['image'] }} width=100 height=100>
+							{% else %}
+								<img src={{ url_for('static', filename = 'album-art-missing.png') }} width=100 height=100>
+							{% endif %}
+					
+						</div> -->
+						<div>
+							<ul class="list-group">
+							{% for track in rel_display['tracks'] %}
+							<li class="list-group-item">
+								{{ track['number'] }}. {{ track['recording']['title'] }}
+						
+								{% if track['recording']['artist-relation-list'] is defined %}
+									<ul>
+									{% for person in track['recording']['artist-relation-list'] %}
+										<li>{{ person['type'] }} : {{ person['artist']['name'] }}</li>
+									{% endfor %}
+									</ul>
+								{% else %}
+									Whoops! Looks like some info is missing. If you are obliged you can fill it in at <a href="http://musicbrainz.org">MusicBrainz.org.</a>
+								{% endif %}
+					</li>
+
+							{% endfor %}
+						</ul>
 						</div>
-					</ul>
-			</div>
-		{% endfor %}	
+					</div>
+					</div>	
+				</div>
+				
+		</div>
 	</div>
+
+</div>
+		{% endfor %}
+	
 	{% else %}
 			<li><em>Unbelievable. No entries here so far</em>
 	{% endif %}

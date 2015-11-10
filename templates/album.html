@@ -1,31 +1,12 @@
-{% extends "layout.html" %}
-{% block body %}
+{% extends "base.html" %}
+{% block content %}
 
 <!-- <ul class=entries> -->
-	<h1>{{ album_title }}</h1>
-	<div style="display:inline-block">
-		{% if image %}
-			<img src={{ image }} width=200 height=200>
-		{% else %}
-			<img src={{ url_for('static', filename = 'album-art-missing.png') }} width=200 height=200>
-		{% endif %}
-	</div>
-	<div style="display:inline-block">
-
-	{% for track in tracks %}
-			<div class="hover">
-					{{ track['number'] }}. {{ track['recording']['title'] }}
-					<ul class="track-info">
-						<div>
-							<p>
-							{% for person in track['recording']['artist-relation-list'] %}
-							{{ person['type'] }} : {{ person['artist']['name'] }}</br>
-							{% endfor %}
-							</p>
-						</div>
-					</ul>
-			</div>
-	{% endfor %}	
-	</div>
+	<h1>Releases</h1>
+			<ul>
+		{% for title, list in session['releases_list'].iteritems() %}
+			<li><h2><a href="{{ url_for('parse_album_title', album_title=title) }}">{{ title }}</a></h2>
+		{% endfor %}
+			</ul>
 <!-- </ul> -->
 {% endblock %}

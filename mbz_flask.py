@@ -2,7 +2,6 @@ import os, urllib
 from flask import Flask, request, session, g, redirect, url_for, \
 	abort, render_template, flash
 from contextlib import closing
-from flask.ext.bootstrap import Bootstrap
 from flask_analytics import Analytics
 from flaskext.mysql import MySQL
 from mbz_query import MusicBrainzQueryInterface
@@ -10,7 +9,6 @@ from mbz_query import MusicBrainzQueryInterface
 app = Flask(__name__)
 mysql = MySQL()
 Analytics(app)
-bootstrap = Bootstrap(app)
 
 
 #Configure Musicbrainz API Requests
@@ -24,6 +22,7 @@ app.config['MYSQL_DATABASE_PASSWORD'] = os.environ['LINR_NOTES_DB_PW']
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_DB'] = 'linr_notes'
 mysql.init_app(app)
+
 
 #Ensure Database has been created
 with app.app_context():
@@ -66,22 +65,25 @@ def perform_query():
 			return render_template('search_page.html', display_results=search_results)
 		try: 
 			if search_results['artist']:
-				return render_template('show_entries.html', artist_results=search_results)
-		except KeyError:
-			return render_template('show_entries.html', display_results=search_results)
+				return render_template('artist.html', artist_results=search_results)
+		except (TypeError, KeyError) as e:
+			session['releases_list'] = search_results
+			return render_template('album.html')
 	return render_template('search_page.html', artist_results=search_results)
 		
 @app.route('/<artist_title>/<artist_id>', methods=['GET', 'POST'])
 def return_artists(artist_title,artist_id):
-	search_results = mbz_q.retrieve_albums_by_artist_id(mbz_id=artist_id)
-	return render_template('show_entries.html', display_results=search_results)
+	session['releases_list'] = mbz_q.retrieve_albums_by_artist_id(mbz_id=artist_id)
+	return render_template('search_page.html')
 
-@app.route('/album/<album_title>/<album_id>', methods=['GET', 'POST'])
-def parse_album_title(album_title, album_id):
-	image, tracks, labels_list = mbz_q.release_info(album_id)
-	return render_template('show_entries.html', image=image, tracks=tracks, album_title=album_title)
+@app.route('/album/<album_title>/', methods=['GET', 'POST'])
+def parse_album_title(album_title):	
+	release_display_list = mbz_q.release_info(session['releases_list'][album_title])
+	print release_display_list[0]['image']
+	return render_template('show_entries.html', release_display_list=release_display_list, album_title=album_title)
 
 
 if __name__ == '__main__':
+	app.secret_key = '\x05\xf0h\xa0\xc7\x90w\x8b\xd7)\x82\x07\x97\x90\xd9\xef\x12\x85D\x8d\xfe!\xb1C'
 	app.run(debug=True)
 

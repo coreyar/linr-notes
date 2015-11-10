@@ -1,10 +1,10 @@
-{% block doc -%}
+{% block doc %}
 <!DOCTYPE html>
 <html{% block html_attribs %}{% endblock html_attribs %}>
 {%- block html %}
   <head>
     {%- block head %}
-    <title>{% block title %}{% endblock title %}</title>
+    <title>{% block title %}Linr Notes{% endblock title %}</title>
 
     {%- block metas %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,23 +12,37 @@
 
     {%- block styles %}
     <!-- Bootstrap -->
-    <link href="{{bootstrap_find_resource('css/bootstrap.css', cdn='bootstrap')}}" rel="stylesheet">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.css') }}">
+    <link rel=stylesheet href="{{ url_for('static', filename='bootstrap-theme.min.css') }}">
+    <link rel=stylesheet href="{{ url_for('static', filename='bootstrap-select.css') }}">
+
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     {%- endblock styles %}
+    {{ analytics }}
     {%- endblock head %}
   </head>
   <body{% block body_attribs %}{% endblock body_attribs %}>
     {% block body -%}
     {% block navbar %}
+       
     {%- endblock navbar %}
+    <div class="page">
+     <h1 align="center">Linr Notes <em>Beta</em> </h1>
+    <p align="center"> Linr Notes is an application that retrieves song credit information from the <a href="https://musicbrainz.org/">Music Brainz</a> database.<p>
     {% block content -%}
     {%- endblock content %}
-
+    </div>
     {% block scripts %}
-    <script src="{{bootstrap_find_resource('jquery.js', cdn='jquery')}}"></script>
-    <script src="{{bootstrap_find_resource('js/bootstrap.js', cdn='bootstrap')}}"></script>
+    <script type=text/javascript src="{{ url_for('static', filename='jquery-1.11.3.js') }}"></script>
+    <script type=text/javascript src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap-select.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
     {%- endblock scripts %}
     {%- endblock body %}
   </body>
+<footer>
+      <p align="center">&copy; <a href="http://www.hamachidigital.com">Hamachi Digital</a> 2015 </p>
+</footer>
 {%- endblock html %}
 </html>
 {% endblock doc -%}

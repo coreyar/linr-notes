@@ -1,6 +1,8 @@
 import musicbrainzngs as mbz
 import os, json, requests
 from operator import itemgetter
+from collections import defaultdict
+from flask import session
 
 caa = 'http://coverartarchive.org'
 
@@ -18,39 +20,43 @@ class MusicBrainzQueryInterface():
             results = mbz.search_artists(artist) 
             if results['artist-count'] == 1:
                 mbz_id = results['artist-list'][0]['id']
-                return retrieve_albums_by_artist_id(mbz_id)
+                return self.retrieve_albums_by_artist_id(mbz_id)
             else:
                 return {'artist':parse_artist_list(results)}
 
     def retrieve_albums_by_artist_id(self, mbz_id):
-        return parse_artist_releases(mbz.get_artist_by_id(mbz_id, includes=['releases']))
+        album_response = mbz.get_artist_by_id(mbz_id, includes=['releases'])
+        album_dict = defaultdict(list)
+        for release in album_response['artist']['release-list']:
+            album_dict[release['title']].append(release['id'])
+        return dict(album_dict)
+
 
     def artist_parser(self, result):
         return dict(artist_name=result['artist-list'][0]['name'], 
                     music_brainz_id=result['artist-list'][0]['id'])
 
-    def release_info(self, album_id):
+    def release_info(self, release_list):
         data = ['artists', 'labels', 'recordings', 'release-groups', 'media', 'artist-credits', 'discids', 
         'isrcs', 'recording-level-rels', 'work-level-rels', 'annotation', 'aliases', 'area-rels', 'artist-rels', 'label-rels', 'place-rels',  
         'recording-rels', 'release-rels', 'release-group-rels', 'url-rels', 'work-rels']
-        image = False
-        album_data =  mbz.get_release_by_id(album_id, includes=data) 
-        labels_list = []
-        for label in album_data['release']['label-info-list']:
-            labels_list.append(label['label']['name'])
-        tracks = album_data['release']['medium-list'][0]['track-list']
+        release_display_list = []
+        for release in release_list:
+            image = False
+            album_data =  mbz.get_release_by_id(release, includes=data) 
+            labels_list = []
+            for label in album_data['release']['label-info-list']:
+                labels_list.append(label['label']['name'])
+            tracks = album_data['release']['medium-list'][0]['track-list']
         # release_date = song_data['release']['date']
-        if album_data['release']['cover-art-archive']['artwork'] == 'true':
-            r = requests.get('{0}/release/{1}'.format(caa, album_id)).json()
-            image = r['images'][0]['image']
-        return image, tracks, labels_list, 
+            if album_data['release']['cover-art-archive']['artwork'] == 'true':
+                r = requests.get('{0}/release/{1}'.format(caa, release)).json()
+                image = r['images'][0]['image']
+                print image
+            release_display_list.append({'image':image, 'tracks':tracks, 'labels_list':labels_list})
+        return release_display_list
 
 ##Series of functions to parse Musicbrainz results
-def parse_artist_releases(releases):
-    rel_id_title_list = []
-    for rel in releases['artist']['release-list']:
-        rel_id_title_list.append({'id':rel['id'], 'title':rel['title']})
-    return sorted(rel_id_title_list, key=itemgetter('title')) 
 
 def create_track_time():
     return track_time
@@ -94,9 +100,6 @@ def recording_parser(results):
         rec_id = recording['id']
         list_of_recordings.append({'id':alb_id,'name':display_title})
     return list_of_recordings
-
-def retrieve_albums_by_artist_id(mbz_id):
-    return parse_artist_releases(mbz.get_artist_by_id(mbz_id, includes=['releases']))
 
 def parse_artist_list(result):
     list_of_artists = []
