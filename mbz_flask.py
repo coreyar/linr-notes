@@ -79,7 +79,6 @@ def return_artists(artist_title,artist_id):
 @app.route('/album/<album_title>/', methods=['GET', 'POST'])
 def parse_album_title(album_title):	
 	release_display_list = mbz_q.release_info(session['releases_list'][album_title])
-	print release_display_list[0]['image']
 	return render_template('show_entries.html', release_display_list=release_display_list, album_title=album_title)
 
 

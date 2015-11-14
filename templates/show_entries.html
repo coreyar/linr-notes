@@ -16,18 +16,16 @@
 							{% endif %}
 							<a data-toggle="collapse" data-target="#rel{{ loop.index }}" href="#rel{{ loop.index }}">{{ album_title }}</a>
 						</h4>
+						</br>
+						<ul> {% for label in rel_display['labels'] %}
+							<li> Label: {{ label }}</li>
+							{% endfor %}
+						</ul>
+
 					</div>
 					<div id="rel{{ loop.index }}" class="panel-collapse collapse">
 					<div class="panel-body">	
 					<div class="row">
-					<!-- 	<div style="display:inline-block">
-							{% if rel_display['image'] %}
-								<img src={{ rel_display['image'] }} width=100 height=100>
-							{% else %}
-								<img src={{ url_for('static', filename = 'album-art-missing.png') }} width=100 height=100>
-							{% endif %}
-					
-						</div> -->
 						<div>
 							<ul class="list-group">
 							{% for track in rel_display['tracks'] %}
@@ -43,7 +41,7 @@
 								{% else %}
 									Whoops! Looks like some info is missing. If you are obliged you can fill it in at <a href="http://musicbrainz.org">MusicBrainz.org.</a>
 								{% endif %}
-					</li>
+							</li>
 
 							{% endfor %}
 						</ul>

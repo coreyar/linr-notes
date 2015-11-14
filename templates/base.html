@@ -15,7 +15,6 @@
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap.css') }}">
     <link rel=stylesheet href="{{ url_for('static', filename='bootstrap-theme.min.css') }}">
     <link rel=stylesheet href="{{ url_for('static', filename='bootstrap-select.css') }}">
-
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
     {%- endblock styles %}
     {{ analytics }}
@@ -27,8 +26,9 @@
        
     {%- endblock navbar %}
     <div class="page">
-     <h1 align="center">Linr Notes <em>Beta</em> </h1>
-    <p align="center"> Linr Notes is an application that retrieves song credit information from the <a href="https://musicbrainz.org/">Music Brainz</a> database.<p>
+    <h1 align="center">Linr Notes <em>Beta</em> </h1>
+    <p align="center"> Linr Notes is an application that retrieves song credit information from the <a href="https://musicbrainz.org/">Music Brainz</a> database.</p>
+
     {% block content -%}
     {%- endblock content %}
     </div>
