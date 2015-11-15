@@ -1,8 +1,7 @@
 import musicbrainzngs as mbz
-import os, json, requests
+import os, json, requests, datetime
 from operator import itemgetter
 from collections import defaultdict
-from flask import session
 
 caa = 'http://coverartarchive.org'
 
@@ -37,20 +36,20 @@ class MusicBrainzQueryInterface():
                     music_brainz_id=result['artist-list'][0]['id'])
 
     def release_info(self, release_list):
-        data = ['artists', 'labels', 'recordings', 'release-groups', 'media', 'artist-credits', 
-        'recording-level-rels', 'work-level-rels', 'artist-rels', 'label-rels', 'place-rels',  
-        'recording-rels', 'release-rels', 'release-group-rels', 'work-rels']
+        data = ['artists', 'labels', 'recordings', 'media', 'artist-credits', 'release-groups']
         release_display_list = []
         for release in release_list:
             image = False
             album_data =  mbz.get_release_by_id(release, includes=data) 
             labels = [label['label']['name'] for label in album_data['release']['label-info-list']]
+            formats = [medium['format'] for medium in album_data['release']['medium-list']]
             tracks = album_data['release']['medium-list'][0]['track-list']
-        # release_date = song_data['release']['date']
             if album_data['release']['cover-art-archive']['artwork'] == 'true':
                 r = requests.get('{0}/release/{1}'.format(caa, release)).json()
                 image = r['images'][0]['image']
-            release_display_list.append({'image':image, 'tracks':tracks, 'labels':labels, 'title':'' })
+            release_date = datetime.datetime.strptime(album_data['release']['release-group']['first-release-date'], '%Y-%m-%d').strftime("%B %d, %Y")
+            release_display_list.append({'image':image, 'tracks':tracks, 'labels':labels, 
+                'formats':formats, 'release_date': release_date })
         return release_display_list
 
 ##Series of functions to parse Musicbrainz results
