@@ -76,7 +76,7 @@ def perform_query():
 @app.route('/<artist_title>/<artist_id>', methods=['GET', 'POST'])
 def return_artists(artist_title,artist_id):
 	session['releases_list'] = mbz_q.retrieve_albums_by_artist_id(mbz_id=artist_id)
-	return render_template('search_page.html')
+	return render_template('album.html')
 
 @app.route('/album/<album_title>/', methods=['GET', 'POST'])
 def parse_album_title(album_title):	
@@ -86,5 +86,5 @@ def parse_album_title(album_title):
 
 if __name__ == '__main__':
 	app.secret_key = os.environ['SECRET_KEY']
-	app.run()
+	app.run(debug=True)
 
