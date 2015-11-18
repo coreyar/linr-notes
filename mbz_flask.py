@@ -19,8 +19,8 @@ app.config['ANALYTICS']['GOOGLE_ANALYTICS']['account'] = os.environ['LINR_NOTES_
 #Configure MySQL Database
 app.config['MYSQL_DATABASE_USER'] = os.environ['LINR_NOTES_DB_USER']
 app.config['MYSQL_DATABASE_PASSWORD'] = os.environ['LINR_NOTES_DB_PW']
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.config['MYSQL_DATABASE_DB'] = 'linr_notes'
+app.config['MYSQL_DATABASE_HOST'] = os.environ['LINR_NOTES_DATABASE_HOST']
+app.config['MYSQL_DATABASE_DB'] = os.environ['LINR_NOTES_DATABASE_DB']
 mysql.init_app(app)
 
 
@@ -66,6 +66,8 @@ def perform_query():
 		try: 
 			if search_results['artist']:
 				return render_template('artist.html', artist_results=search_results)
+			if search_results['song']:
+				return render_template('song.html', song_results=search_results)
 		except (TypeError, KeyError) as e:
 			session['releases_list'] = search_results
 			return render_template('album.html')
@@ -83,6 +85,6 @@ def parse_album_title(album_title):
 
 
 if __name__ == '__main__':
-	app.secret_key = '\x05\xf0h\xa0\xc7\x90w\x8b\xd7)\x82\x07\x97\x90\xd9\xef\x12\x85D\x8d\xfe!\xb1C'
-	app.run(debug=True)
+	app.secret_key = os.environ['SECRET_KEY']
+	app.run()
 
