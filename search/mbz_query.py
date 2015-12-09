@@ -13,15 +13,13 @@ class MusicBrainzQueryInterface():
         # self.db = sqlite3.connect("output.db")
 
     def mbz_query(self, artist, song):
+        query_dict = {'recordings': None,'artists': None}
         if song:
-            return {'song':recording_parser(mbz.search_recordings(song, artist))}
+            query_dict['recordings'] = recording_parser(mbz.search_recordings(song, artist))
+            return query_dict
         else:
-            results = mbz.search_artists(artist) 
-            if results['artist-count'] == 1:
-                mbz_id = results['artist-list'][0]['id']
-                return self.retrieve_albums_by_artist_id(mbz_id)
-            else:
-                return {'artist':parse_artist_list(results)}
+            query_dict['artists'] = mbz.search_artists(artist)
+            return query_dict
 
     def retrieve_albums_by_artist_id(self, mbz_id):
         album_response = mbz.get_artist_by_id(mbz_id, includes=['releases'])
@@ -31,9 +29,9 @@ class MusicBrainzQueryInterface():
         return dict(album_dict)
 
 
-    def artist_parser(self, result):
-        return dict(artist_name=result['artist-list'][0]['name'], 
-                    music_brainz_id=result['artist-list'][0]['id'])
+    # def artist_parser(self, result):
+    #     return dict(artist_name=result['artist-list'][0]['name'], 
+    #                 music_brainz_id=result['artist-list'][0]['id'])
 
     def release_info(self, release_list):
         data = ['artists', 'labels', 'recordings', 'release-groups', 'media', 'artist-credits', 'discids', 
@@ -76,44 +74,51 @@ def recording_parser(results):
     rec_type = ''
     rec_type_title = ''
     status = ''
+    recording_data = ['artists', 'releases', 'discids', 'media', 'artist-credits', 'isrcs', 'annotation', 
+                    'aliases', 'tags', 'user-tags', 'ratings', 'user-ratings', 'area-rels', 'artist-rels', 
+                    'label-rels', 'place-rels', 'recording-rels', 'release-rels', 
+                    'release-group-rels', 'url-rels', 'work-rels']
     for recording in results['recording-list']:
-        rec_result = mbz.get_recording_by_id(recording['id'], includes=['artists','releases', 'media', 'artist-credits'])
-        
-        # try:
-        #     artist_name = recording['artist-credit'][0]['artist']['name'] 
-        # except KeyError:
-        #     pass
-        # try:
-        #     title = recording['title']
-        # except KeyError:
-        #     pass
-        # try:
-        #     rec_type = recording['release-list'][0]['release-group']['primary-type'] 
-        # except KeyError:
-        #     pass
-        # try:
-        #     for release in recording['release-list']:
-        #         rec_type_title = release['title'] 
-        # except KeyError:
-        #     pass
-        # try:
-        #     for rel_stat in recording['release-list']:
-        #         status = rel_stat['status'] 
-        # except KeyError:
-        #     pass
-        # try:
-        #     for rel_alb_id in recording['release-list']:
-        #         alb_id = rel_alb_id['id']
-        # except KeyError:
-        #     pass
-        # display_title = artist_name + ' - ' + title + ' (' + rec_type + ': ' + rec_type_title + ', ' + status + ')'
-        # rec_id = recording['id']
-        # list_of_recordings.append({'id':alb_id,'name':display_title})
-    return list_of_recordings
+        rec_result = mbz.get_recording_by_id(recording['id'], includes=['releases'])
+        list_of_recordings.append({'title': recording['title'],
+                                    'rec_id':recording['id'], 
+                                    'rel_id':[ rel['id'] for rel in rec_result['recording']['release-list']] })
+    parsed_list_of_recordings = parse_list_of_recordings(list_of_recordings)
+    return parsed_list_of_recordings
+
+def parse_list_of_recordings(list_of_recordings):
+    data = ['artists', 'labels', 'recordings', 'release-groups', 'media', 'artist-credits', 'discids', 
+         'isrcs', 'recording-level-rels', 'work-level-rels', 'annotation', 'aliases', 'area-rels', 'artist-rels', 'label-rels', 'place-rels',  
+         'recording-rels', 'release-rels', 'release-group-rels', 'url-rels', 'work-rels']
+        # data = ['artists', 'labels', 'recordings', 'media', 'release-groups', 'release-rels', 'artist-rels']
+    image = False
+    formats = ''
+    release_date = ''
+    labels = ''
+    release_display_list = []
+    for rec_dict in list_of_recordings :
+        list_of_releases = rec_dict.pop('rel_id')
+        for release in list_of_releases:
+            album_data =  mbz.get_release_by_id(release, includes=data) 
+            labels = [label['label']['name'] for label in album_data['release']['label-info-list']]
+            try:
+                formats = [medium['format'] for medium in album_data['release']['medium-list']]
+            except KeyError:
+                pass
+            tracks = album_data['release']['medium-list'][0]['track-list']
+            if album_data['release']['cover-art-archive']['artwork'] == 'true':
+                r = requests.get('{0}/release/{1}'.format(caa, release)).json()
+                image = r['images'][0]['image']
+            try:
+                release_date = datetime.datetime.strptime(album_data['release']['release-group']['first-release-date'], '%Y-%m-%d').strftime("%B %d, %Y")
+            except ValueError:
+                release_date = album_data['release']['release-group']['first-release-date']
+            release_display_list.append({'image':image, 'tracks':tracks, 'labels':labels, 
+                'formats':formats, 'release_date': release_date })
+        return release_display_list
 
 def parse_artist_list(result):
     list_of_artists = []
-    print result['artist-list']
     for artist in result['artist-list']:
         list_of_artists.append({'id':artist['id'],'name':artist['name']})
     return list_of_artists
