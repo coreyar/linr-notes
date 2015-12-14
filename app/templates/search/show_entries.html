@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if release_display_list %}
+	{% for rel_display in release_display_list %}
+		
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1">
+			<div class="panel panel-default">
+				<div class="panel-heading clickable" data-toggle="collapse" data-target="#rel{{ loop.index }}" href="#rel{{ loop.index }}">
+					<div class="row">
+						<div class="col-md-2">
+							{% if rel_display['image'] %}
+								<img src={{ rel_display['image'] }} width=75 height=75>
+							{% else %}
+								<img src={{ url_for('static', filename='album-art-missing.png') }} width=75 height=75>
+							{% endif %}
+						</div>
+						<div class="col-md-10">
+								<h4 class="panel-title">
+									{{ album_title }}
+								</h4>
+								<ul> 
+									<li>Release Date: {{ rel_display['release_date'] }}
+									{% for label in rel_display['labels'] %}
+									<li>Label: {{ label }}</li>
+									{% endfor %}
+									{% for format in rel_display['formats'] %}
+									<li>Format: {{ format }}</li>
+									{% endfor %}
+								</ul>
+						</div>		
+					</div>
+				</div>
+				<div id="rel{{ loop.index }}" class="panel-collapse collapse">
+					<div class="panel-body">	
+						<div class="row">
+							<div>
+								<ul class="list-group">
+									{% for track in rel_display['tracks'] %}
+									<li class="list-group-item">
+										{{ track['number'] }}. {{ track['recording']['title'] }}
+										{% if track['recording']['artist-relation-list'] is defined %}
+											<ul>
+												{% for person in track['recording']['artist-relation-list'] %}
+												<li>{{ person['type'] }} : {{ person['artist']['name'] }}</li>
+												{% endfor %}
+											</ul>
+										{% else %}
+											</br>Whoops! Looks like some info is missing. If you are obliged you can fill it in at <a href="http://musicbrainz.org">MusicBrainz.org.</a>
+										{% endif %}
+									</li>
+								{% endfor %}
+								</ul>
+							</div>
+						</div>
+					</div>	
+				</div>			
+			</div>
+		</div>
+	</div>
+		{% endfor %}
+	
+	{% else %}
+			<li><em>Unbelievable. No entries here so far</em></li>
+	{% endif %}
+	</ul>
+{% endblock %}

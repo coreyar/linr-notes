@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- <ul class=entries> -->
+	<h1>Releases</h1>
+			<ul>
+		{% for title, list in session['releases_list'].iteritems() %}
+			<li><h2><a href="{{ url_for('parse_album_title', album_title=title|urlencode) }}">{{ title }}</a></h2></li>
+		{% endfor %}
+			</ul>
+<!-- </ul> -->
+{% endblock %}

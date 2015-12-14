@@ -1,0 +1,55 @@
+{% extends "search/base.html" %}
+{% block content %}
+{% macro render_field(field, placeholder=None) %}
+{% if field.errors %}
+<div>
+{% elif field.flags.error %}
+<div>
+{% else %}
+<div>
+{% endif %}
+    {% set css_class = 'form-control ' + kwargs.pop('class', '') %}
+    {{ field(class=css_class, placeholder=placeholder, **kwargs) }}
+</div>
+{% endmacro %}
+		<form method="POST" action="." accept-charset="UTF-8" role="form">
+			{{ form.csrf_token }}
+			{{ render_field(form.artist_query, placeholder="Artist",
+                                  autofocus="") }}
+      		{{ render_field(form.recording_query, placeholder="Recording") }}
+		      <button type="submit" name="submit">Search</button>
+    </form>
+
+	{% if search_results.artists %}
+	<h3> Artists</h3>
+	{% for artist in search_results['artists']['artist-list'] %}
+		<ul>
+			<li><a href="{{ url_for('return_artists', artist_id=artist.id, artist_title=artist.name) }}">{{ artist.name }}</a>
+				{% if 'begin-area' in artist %}
+					{{ artist['begin-area']['name'] }},
+				{% endif %}
+				{% if artist['country'] %}
+				{{ artist['country']}}
+				{% endif %}
+				{% if artist['life-span']['begin'] is defined %}
+					{{ artist['life-span']['begin'] }}
+				{% endif %}
+				{% if artist['life-span']['ended'] == 'false' %} 
+				 - now
+				 {% else %}
+					- {{ artist['life-span']['ended']}}
+				{% endif %}
+
+			</li>
+
+		</ul>
+	{% endfor %}
+	{% endif %}
+	{% if search_results.recordings %}
+	<h3> Recordings </h3>
+	{{ search_results.recordings }}
+	{% endif %}
+{% endblock %}
+
+
+
