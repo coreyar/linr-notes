@@ -1,34 +1,28 @@
-# Import the database object (db) from the main application module
-# We will define this inside /app/__init__.py in the next sections.
-from app import db
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from app.database import Base
+from sqlalchemy.orm import relationship
 
-# Define a base model for other database tables to inherit
-class Base(db.Model):
 
-    __abstract__  = True
-
-    id            = db.Column(db.Integer, primary_key=True)
-    date_created  = db.Column(db.DateTime,  default=db.func.current_timestamp())
-    date_modified = db.Column(db.DateTime,  default=db.func.current_timestamp(),
-                                           onupdate=db.func.current_timestamp())
 
 # Define a Search model
 class Searches(Base):
 
     __tablename__ = 'search_data'
 
+    id = Column(Integer, primary_key=True)
+
     # Is artist search
-    artist_search = db.Column(db.Boolean,  nullable=False)
+    artist_search = Column(Boolean,  nullable=False)
 
     # Is recording search
-    recording_search = db.Column(db.Boolean,  nullable=False)
+    recording_search = Column(Boolean,  nullable=False)
     
     # Search location
-    ip_address = db.Column(db.String(192),  nullable=False)
+    ip_address = Column(String(192),  nullable=False)
 
-    artist_searches = db.relationship('ArtistSearches',backref='search_data')
+    artist_searches = relationship('ArtistSearches',backref='search_data')
 
-    recording_searches = db.relationship('RecordingSearches', backref='search_data')
+    recording_searches = relationship('RecordingSearches', backref='search_data')
 
     # New instance instantiation procedure
     def __init__(self, artist_search, recording_search, ip_address):
@@ -43,11 +37,13 @@ class ArtistSearches(Base):
 
     __tablename__ = 'artist_search_queries'
 
+    id = Column(Integer, primary_key=True)
+
     # Foreign Key from Searches 
-    search_id = db.Column(db.Integer,  db.ForeignKey('search_data.id'))
+    search_id = Column(Integer,  ForeignKey('search_data.id'))
 
     # Query
-    search_term = db.Column(db.Boolean,  nullable=False)
+    search_term = Column(String(200),  nullable=False)
 
     # New instance instantiation procedure
     def __init__(self, search_id, search_term):
@@ -63,11 +59,13 @@ class RecordingSearches(Base):
 
     __tablename__ = 'recording_search_queries'
 
+    id = Column(Integer, primary_key=True)
+
     # Is artist search
-    search_id = db.Column(db.Integer,  db.ForeignKey('search_data.id'))
+    search_id = Column(Integer,  ForeignKey('search_data.id'))
 
     # Is recording search
-    search_term = db.Column(db.Boolean,  nullable=False)
+    search_term = Column(String(200),  nullable=False)
 
     # New instance instantiation procedure
     def __init__(self, search_id, search_term):

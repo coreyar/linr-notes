@@ -24,7 +24,7 @@
 	<h3> Artists</h3>
 	{% for artist in search_results['artists']['artist-list'] %}
 		<ul>
-			<li><a href="{{ url_for('return_artists', artist_id=artist.id, artist_title=artist.name) }}">{{ artist.name }}</a>
+			<li><a href="{{ url_for('search.return_artists', artist_id=artist.id, artist_title=artist.name) }}">{{ artist.name }}</a>
 				{% if 'begin-area' in artist %}
 					{{ artist['begin-area']['name'] }},
 				{% endif %}

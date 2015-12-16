@@ -1,6 +1,10 @@
 *.py[cod]
 *.ipynb
+
+**Instance Files
 *.db
+instance/
+
 #OS generated files #
 ######################
 .DS_Store

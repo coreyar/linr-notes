@@ -1,7 +1,7 @@
 from app import app
 import unittest
 
-class FlaskTestCase(unittest.TestCase):
+class LinrNotesTestCase(unittest.TestCase):
 
 	def test_index(self):
 		tester = app.test_client(self)
