@@ -8,6 +8,7 @@ Flask-WTF==0.12
 gunicorn==19.3.0
 itsdangerous==0.24
 Jinja2==2.8
+lxml==3.5.0
 MarkupSafe==0.23
 musicbrainzngs==0.5
 MySQL-python==1.2.5
