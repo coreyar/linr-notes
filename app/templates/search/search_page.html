@@ -19,11 +19,12 @@
       		{{ render_field(form.recording_query, placeholder="Recording") }}
 		      <button type="submit" name="submit">Search</button>
     	</form>
-
-	{% if search_results.artists %}
+{% if 'search_results' in session %}
+	{% if session.search_results.artists %}
 	<h3> Artists</h3>
-	{% for artist in search_results['artists']['artist-list'] %}
 		<ul>
+	{% for artist in session.search_results['artists']['artist-list'] %}
+		
 			<li><a href="{{ url_for('search.return_artists', artist_id=artist.id, artist_title=artist.name) }}">{{ artist.name }}</a>
 				{% if 'begin-area' in artist %}
 					{{ artist['begin-area']['name'] }},
@@ -42,13 +43,42 @@
 
 			</li>
 
-		</ul>
+		
 	{% endfor %}
+		</ul>
 	{% endif %}
-	{% if search_results.recordings %}
+
+	{% if session.search_results.recordings %}
 	<h3> Recordings </h3>
-	{{ search_results.recordings }}
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Recording</th>
+					<th>Release (Type)</th>
+					<th>Artist</th>
+					<th>Release Date</th>
+					<th>Territory</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for recording in session.search_results.recordings['recording-list'] %}
+				<tr>
+					<td><a href="{{url_for('search.recording_release_page', recording_title=recording.title, rec_id=recording.id)}}">
+						{{ recording['title']}}</a></td>
+					<td>{% if 'release-list' in recording %} {{ recording['release-list'][0]['title'] }} {% endif %} {% if 'release-event-list' in recording %}({{recording['release-event-list'][0]['primary-type']}}){% endif %}</td>
+					<td>{{ recording['artist-credit'][0]['artist']['name'] }}</td>
+					<td>{% if 'release-event-list' in recording %}{{ recording['release-event-list'][0]['date'] }}{% endif %}</td>
+					<td>{% if 'release-event-list' in recording %}{{ recording['release-event-list'][0]['territory']}}{% endif %}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+
+		</table>
+	
+	
+		</ul>
 	{% endif %}
+{% endif %}	
 {% endblock %}
 
 
