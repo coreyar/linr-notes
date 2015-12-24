@@ -5,7 +5,7 @@
 	<h1>Artists</h1>
 			<ul>
 		{% for result in artist_results['artist'] %}
-			<li><h2><a href="{{ url_for('return_artists', artist_id=result['id'], artist_title=result['name']) }}">{{ result['name'] }}</a></h2></li>
+			<li><h2><a href="{{ url_for('search.return_artists', artist_id=result['id'], artist_title=result['name']) }}">{{ result['name'] }}</a></h2></li>
 		{% endfor %}
 			</ul>
 <!-- </ul> -->
