@@ -15,5 +15,6 @@ Base.query = db_session.query_property()
 
 
 def init_db():
-    import search.models 
+    import search.models
+    import accounts.models 
     Base.metadata.create_all(engine)
