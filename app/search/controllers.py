@@ -31,13 +31,14 @@ def shutdown_session(exception=None):
 @search.route('/', methods=['GET','POST'])
 def perform_query():
     form = SearchForm(request.form)
-    artist, rec, search_results, = None, None, None
+    artist, rec, = None, None
     if form.validate_on_submit():
         artist = request.form['artist_query']
         rec = request.form['recording_query']
         ip_address = request.remote_addr
         commit_to_database(artist,rec,ip_address)
-    session['search_results'] = mbz_q.mbz_query(artist=artist, recording=rec)
+        session['search_results'] = mbz_q.mbz_query(artist=artist, recording=rec)
+        return redirect('/')
     return render_template('search/search_page.html', form=form)
 
 def commit_to_database(artist,rec,ip_address):
