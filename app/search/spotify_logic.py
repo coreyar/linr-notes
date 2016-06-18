@@ -1,4 +1,8 @@
-from pyechonest import config, artist, song
+import spotipy
 import os
 
-config.ECHO_NEST_API_KEY = os.environ['ECHO_NEST_API_KEY']
+spotify = spotipy.Spotify()
+
+
+def mbz_search_dict(sp_uri):
+	spotify.track(sp_uri)

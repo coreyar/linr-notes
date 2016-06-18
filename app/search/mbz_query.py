@@ -15,13 +15,9 @@ class MusicBrainzQueryInterface():
         query_dict = {'recordings': None,'artists': None}
         if recording:
             query_dict['recordings'] = mbz.search_recordings(artist, recording)
-            print query_dict
-            print dir(recording)
             return query_dict
         elif artist:
             query_dict['artists'] = mbz.search_artists(artist)
-            print query_dict
-            print artist
             return query_dict
         else:
             return None

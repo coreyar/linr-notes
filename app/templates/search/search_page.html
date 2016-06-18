@@ -12,15 +12,6 @@
     {{ field(class=css_class, placeholder=placeholder, **kwargs) }}
 </div>
 {% endmacro %}
-<h2>Music Brainz Search</h2>
-		<form method="POST" action="." accept-charset="UTF-8" role="form">
-			{{ form_mbz.csrf_token }}
-			{{ render_field(form_mbz.artist_query, placeholder="Artist",
-                                  autofocus="") }}
-      		{{ render_field(form_mbz.recording_query, placeholder="Recording") }}
-		      <button type="submit" name="submit" >Search</button>
-    	</form>
-</br>
 <h2>Spotify</h2>
 		<form method="POST" action="." accept-charset="UTF-8" role="form">
 			{{ form_sptfy.csrf_token }}
