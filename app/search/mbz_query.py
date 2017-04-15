@@ -88,10 +88,11 @@ class MusicBrainzQueryInterface():
 
     def get_recording_by_isrc(self, isrc):
         results = mbz.get_recordings_by_isrc(isrc)
-        id_list = []
+        recordings = []
         for each in results['isrc']['recording-list']:
-            id_list.append(each['id'])
-        return mbz.search_recordings(rid=id_list[0])
+            entry = mbz.search_recordings(rid=each['id'])
+            recordings.append(entry)
+        return recordings
 
 def parse_artist_list(result):
     list_of_artists = []
