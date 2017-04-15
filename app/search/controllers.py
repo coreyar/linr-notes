@@ -4,11 +4,10 @@ from spotify_query import spotify_track
 import os, urllib
 
 
-
 class Search(Resource):
-    def get(self, track):
+    def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('track', type=str, help='Spotify Song/Track URI')
         args = parser.parse_args()
-        return spotify_track(track)
+        return spotify_track(args['track'])
 
