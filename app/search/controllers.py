@@ -1,11 +1,13 @@
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
+from spotify_query import spotify_track
 
 import os, urllib
 
+
 class Search(Resource):
-    def post(self):
-        # Default to 200 OK
-        return {'task': 'Hello world'}
-
-
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('track', type=str, help='Spotify Song/Track URI')
+        args = parser.parse_args()
+        return spotify_track(args['track'])
 
