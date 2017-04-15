@@ -61,8 +61,9 @@ class MusicBrainzQueryInterface():
             except ValueError:
                 release_date = album_data['release']['release-group']['first-release-date']
             release_display_list.append({'image':image, 'tracks':tracks, 'labels':labels, 
-                'formats':formats, 'release_date': release_date })
+                'formats':formats, 'release_date': release_date, 'title': album_data['release']['title'] })
         return release_display_list
+        return album_data
 
     def recording_parser(self, results):
         list_of_recordings = []
