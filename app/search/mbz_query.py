@@ -85,6 +85,14 @@ class MusicBrainzQueryInterface():
         parsed_list_of_recordings = self.release_info(list_of_recordings)
         return parsed_list_of_recordings
 
+
+    def get_recording_by_isrc(self, isrc):
+        results = mbz.get_recordings_by_isrc(isrc)
+        id_list = []
+        for each in results['isrc']['recording-list']:
+            id_list.append(each['id'])
+        return mbz.search_recordings(rid=id_list[0])
+
 def parse_artist_list(result):
     list_of_artists = []
     for artist in result['artist-list']:
