@@ -2,6 +2,7 @@ import musicbrainzngs as mbz
 import os, json, requests, datetime
 from operator import itemgetter
 from collections import defaultdict
+from flask_restful import abort
 
 caa = 'http://coverartarchive.org'
 
@@ -63,7 +64,6 @@ class MusicBrainzQueryInterface():
             release_display_list.append({'image':image, 'tracks':tracks, 'labels':labels, 
                 'formats':formats, 'release_date': release_date, 'title': album_data['release']['title'] })
         return release_display_list
-        return album_data
 
     def recording_parser(self, results):
         list_of_recordings = []
@@ -87,8 +87,11 @@ class MusicBrainzQueryInterface():
         return parsed_list_of_recordings
 
 
-    def get_recording_by_isrc(self, isrc):
-        results = mbz.get_recordings_by_isrc(isrc)
+    def get_recording_by_isrc(self, isrc, album):
+        try:
+            results = mbz.get_recordings_by_isrc(isrc)
+        except:
+            abort(500, message='CANNOT FIND {} in MusicBrainz'.format(album))
         recordings = []
         for each in results['isrc']['recording-list']:
             entry = mbz.search_recordings(rid=each['id'])
